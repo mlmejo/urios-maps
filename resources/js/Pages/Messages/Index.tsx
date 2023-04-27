@@ -14,6 +14,7 @@ import { Head, useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface Message {
+  id: number
   content: string;
   receiver: User;
   sender: User;
@@ -24,7 +25,7 @@ interface MessagePageProps extends PageProps {
   messages: Message[];
 }
 
-export default function Messenger({ auth, t, messages }: MessagePageProps) {
+export default function Index({ auth, t, messages }: MessagePageProps) {
   const { data, setData, post } = useForm({
     content: "",
   });
@@ -87,74 +88,79 @@ export default function Messenger({ auth, t, messages }: MessagePageProps) {
             </Box>
           </Box>
 
-          <Flex direction="column" grow={1} height="100%">
-            <Box bg="white" flex="1" boxShadow="md" overflowY="scroll">
-              <Box bg="gray.200" py={2} px={4} borderBottomWidth="1px">
-                <Text fontWeight="bold">{t.name}</Text>
+          {t ?
+            <Flex direction="column" grow={1} height="100%">
+              <Box bg="white" flex="1" boxShadow="md" overflowY="scroll">
+                <Box bg="gray.200" py={2} px={4} borderBottomWidth="1px">
+                  <Text fontWeight="bold">{t.name}</Text>
+                </Box>
+                <Box p={4}>
+                  {messages.map((message) => {
+                    if (message.sender.id === t.id) {
+                      return (
+                        <div key={message.id}>
+                          <Flex key={message.id} mb={2}>
+                            <Avatar
+                              name="John Doe"
+                              src={"/" + auth.user.image.url}
+                              size="sm"
+                              mr={2}
+                            />
+                            <Box bg="gray.100" borderRadius="md" p={2}>
+                              <Text>{message.content}</Text>
+                            </Box>
+                          </Flex>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={message.id}>
+                          <Flex justify="flex-end">
+                            <Box
+                              bg="teal.500"
+                              borderRadius="md"
+                              p={2}
+                              color="white"
+                            >
+                              <Text>{message.content}</Text>
+                            </Box>
+                            <Avatar
+                              name="Jane Doe"
+                              src={"/" + message.receiver.image.url}
+                              size="sm"
+                              ml={2}
+                            />
+                          </Flex>
+                        </div>
+                      );
+                    }
+                  })}
+                </Box>
               </Box>
-              <Box p={4}>
-                {messages.map((message) => {
-                  if (message.sender.id === auth.user.id) {
-                    return (
-                      <>
-                        <Flex mb={2}>
-                          <Avatar
-                            name="John Doe"
-                            src={"/" + auth.user.image.url}
-                            size="sm"
-                            mr={2}
-                          />
-                          <Box bg="gray.100" borderRadius="md" p={2}>
-                            <Text>{message.content}</Text>
-                          </Box>
-                        </Flex>
-                      </>
-                    );
-                  } else {
-                    return (
-                      <Flex justify="flex-end">
-                        <Box
-                          bg="teal.500"
-                          borderRadius="md"
-                          p={2}
-                          color="white"
-                        >
-                          <Text>{message.content}</Text>
-                        </Box>
-                        <Avatar
-                          name="Jane Doe"
-                          src={"/" + message.receiver.image.url}
-                          size="sm"
-                          ml={2}
-                        />
-                      </Flex>
-                    );
-                  }
-                })}
-              </Box>
-            </Box>
-            <form onSubmit={submit}>
-              <Flex
-                bg="gray.100"
-                p={4}
-                borderTopRadius="0"
-                borderBottomEndRadius="lg"
-              >
-                <Input
-                  value={data.content}
-                  onChange={(e) => setData("content", e.target.value)}
-                  placeholder="Type a message..."
-                  flex="1"
-                  mr={4}
-                />
-                <Button type="submit" colorScheme="teal">
-                  Send
-                </Button>
-              </Flex>
-            </form>
-          </Flex>
+              <form onSubmit={submit}>
+                <Flex
+                  bg="gray.100"
+                  p={4}
+                  borderTopRadius="0"
+                  borderBottomEndRadius="lg"
+                >
+                  <Input
+                    value={data.content}
+                    onChange={(e) => setData("content", e.target.value)}
+                    placeholder="Type a message..."
+                    flex="1"
+                    mr={4}
+                  />
+                  <Button type="submit" colorScheme="teal">
+                    Send
+                  </Button>
+                </Flex>
+              </form>
+            </Flex>
+            : <></>
+          }
         </Flex>
       </Box>
-    </Navbar>
+    </Navbar >
   );
 }

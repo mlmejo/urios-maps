@@ -20,8 +20,10 @@ class MessageController extends Controller
             't' => User::with('image:imageable_id,url')
                 ->find($user->id),
             'messages' => Message::with('receiver.image', 'sender.image')
-                ->where('receiver_id', $user->id)
-                ->where('sender_id', $request->user()->id,)->get(),
+                ->where('receiver_id', $request->user()->id)
+                ->orWhere('receiver_id', $user->id)
+                ->orWhere('sender_id', $request->user()->id)
+                ->orWhere('sender_id', $user->id)->get(),
         ]);
     }
 
